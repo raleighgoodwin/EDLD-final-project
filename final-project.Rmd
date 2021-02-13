@@ -1,0 +1,23 @@
+---
+title: "Final Project"
+author: "Raleigh Goodwin"
+date: "2/12/2021"
+output: html_document
+---
+
+Libraries
+```{r}
+library(tidyverse)
+library(psych)
+library(forcats)
+library(scales)
+library(here)
+library(rio)
+```
+
+Data
+```{r}
+data <- import(here::here("CCAMdata2008-2018.sav"))
+
+```
+

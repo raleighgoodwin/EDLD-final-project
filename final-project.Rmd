@@ -13,11 +13,52 @@ library(forcats)
 library(scales)
 library(here)
 library(rio)
+library(lme4)
+library(plyr)
 ```
 
 Data
 ```{r}
 data <- import(here::here("CCAMdata2008-2018.sav"))
 
+data$religion <- as.factor(data$religion)
+
+data$religion_ch <- revalue(data$religion, c("-1" == "0",
+                                             "1" = "1",
+                                             "2" = "1", 
+                                             "3" = "1",
+                                             "4" = "1",
+                                             "5" = "2",
+                                             "6" = "3",
+                                             "7" = "4",
+                                             "8" = "5",
+                                             "9" = "1", 
+                                             "10" = "1",
+                                             "11" = "1",
+                                             "12" = "6",
+                                             "13" = "7",
+                                             "14" = "7",
+                                             "15" = "0"))
+
+# 1 = Christian, 2 = Jewish, 3 = Muslim, 4 = Hindu, 
+# 5 = Buddhist, 6 = Other non-Christian, 7 = Atheist/Agnostic
+# Excluding "none of the above" and "refused"
+```
+
+Exploring
+```{r}
+moon <- lm(data = data, formula = cause_original ~ religion + year)
+summary(moon)
+
+data %>% 
+  filter(religion_ch != "-1" & 
+           religion_ch != "0" &
+           cause_original != -1) %>% 
+  ggplot(aes(year, cause_original, fill = religion_ch)) +
+  geom_bar(stat = "summary", fun.y = "mean", position = "dodge")
+
+data %>% 
+  ggplot(aes(race, cause_original, fill = party_x_ideo)) +
+  geom_bar(stat = "summary", fun.y = "mean", position = "dodge")
 ```
 

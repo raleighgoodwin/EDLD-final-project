@@ -1,9 +1,11 @@
 ---
 title: "Final Project Dashboard"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    theme: united
     social: menu
     source_code: https://raleighgoodwin.github.io/EDLD-final-project/
 ---
@@ -11,34 +13,36 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
+library(plotly)
+library(shiny)
 ```
 
-Page 1
+Page 1 {data-icon="fa-code-branch"}
 ==========
 
-Column {data-width=350}
+Column {.tabset data-width=350}
 -----------------------------------------------------------------------
 
 ### Chart 1
 
 ```{r}
-mtcars %>% 
+plot1 <- mtcars %>% 
   ggplot(aes(wt, mpg, col=as_factor(cyl))) +
   geom_point() + 
   facet_grid(~cyl)
+
+renderPlotly(plot1)
 ```
 
 
 ### Chart 2
 
 ```{r}
-mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
+table1 <- mtcars
+renderDataTable(table1)
 ```
 
-Column {data-width=350}
+Column {.tabset data-width=350}
 -----------------------------------------------------------------------
 
 ### Chart 3

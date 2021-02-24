@@ -113,6 +113,43 @@ harm_plot <- cbind(harm_plotL, harm_plotR) %>%
 
 ```{r}
 # Plot 2 work
+
+dfc_pol <- dfc %>% 
+  pivot_longer(
+    cols = reg_CO2_pollutant:reg_coal_emissions,
+    names_to = "Policy",
+    values_to = "Support"
+  ) %>% 
+  filter(Support != -1)
+
+dfc_pol <- dfc_pol %>% # making these values look nice for plot
+  mutate(Policy = revalue(as.factor(Policy), 
+                             c("reg_CO2_pollutant" = "Regulate Carbon Dioxide Emissions",
+                               "reg_utilities" = "Regulate Utility Energy Sources",
+                               "fund_research" = "Fund Renewable Energy Research",
+                               "reg_coal_emissions" = "Regulate Coal Power Plant Emissions")),
+         Support = revalue(as.factor(Support), 
+                        c("1" = "Strongly oppose",
+                          "2" = "Somewhat oppose",
+                          "3" = "Somewhat support",
+                          "4" = "Strongly support")))
+
+pol_plotL <- dfc_pol %>% 
+  group_by(year, Policy) %>% 
+  dplyr::summarise(totpol = n()) %>% 
+  slice(rep(1:n(), each = 4)) %>% 
+  select(totpol)
+
+pol_plotR <- dfc_pol %>%
+  group_by(year, Policy, Support) %>% 
+  dplyr::summarise(npol = n())
+
+pol_plot <- cbind(pol_plotL, pol_plotR) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         percpol = (npol / totpol) * 100) %>% 
+  select(year, Policy, Support, npol, totpol, percpol)
+
 ```
 
 ```{r}
@@ -142,7 +179,7 @@ Plot 1
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-###
+### Current Version
 
 ```{r}
 harm_plot %>% 
@@ -151,16 +188,20 @@ harm_plot %>%
   facet_wrap(~question2,
              ncol = 2) +
   # scale_x_discrete(labels = xlab) +
-  labs(x = "Year", y = "Percent of Responses") +
+  labs(x = "Year", y = "Percent of Responses",
+       title = '"How much do you think global warming will harm..."') +
   scale_color_viridis_d(name = "Predicted Degree of Harm",
                         option = "plasma") +
-  theme_light()
+  theme_light() +
+  theme(plot.title.position = "plot")
 ```
-
-Next I would like to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this.
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
+
+### Next Steps
+
+Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
 
 ### Version 1
 
@@ -188,27 +229,32 @@ Plot 2
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-### 
+### Current Version
 
 ```{r}
-mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses")
 ```
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
 
+### Next Steps
+
 ### Version 1
 
 ```{r}
-
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge")
 ```
 
 ### Version 2
 
-The version currently on center display will move here and be replaced by the final version.
 
 Plot 3
 ==========
@@ -219,10 +265,7 @@ Column {data-width=700}
 ### 
 
 ```{r}
-mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
+
 ```
 
 Column {.tabset data-width=350}

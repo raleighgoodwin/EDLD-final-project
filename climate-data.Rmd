@@ -139,9 +139,68 @@ harm_plot %>%
 
 # Plot 2
 
-##
+## Create smaller df
 ```{r}
+dfc_pol <- dfc %>% 
+  pivot_longer(
+    cols = reg_CO2_pollutant:reg_coal_emissions,
+    names_to = "Policy",
+    values_to = "Support"
+  ) %>% 
+  filter(Support != -1)
+
+dfc_pol <- dfc_pol %>% # making these values look nice for plot
+  mutate(Policy = revalue(as.factor(Policy), 
+                             c("reg_CO2_pollutant" = "Regulate Carbon Dioxide Emissions",
+                               "reg_utilities" = "Regulate Utility Energy Sources",
+                               "fund_research" = "Fund Renewable Energy Research",
+                               "reg_coal_emissions" = "Regulate Coal Power Plant Emissions")),
+         Support = revalue(as.factor(Support), 
+                        c("1" = "Strongly oppose",
+                          "2" = "Somewhat oppose",
+                          "3" = "Somewhat support",
+                          "4" = "Strongly support")))
+
+```
+
+## Summary df for plot 2
+```{r}
+pol_plotL <- dfc_pol %>% 
+  group_by(year, Policy) %>% 
+  dplyr::summarise(totpol = n()) %>% 
+  slice(rep(1:n(), each = 4)) %>% 
+  select(totpol)
+
+pol_plotR <- dfc_pol %>%
+  group_by(year, Policy, Support) %>% 
+  dplyr::summarise(npol = n())
+
+pol_plot <- cbind(pol_plotL, pol_plotR) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         percpol = (npol / totpol) * 100) %>% 
+  select(year, Policy, Support, npol, totpol, percpol)
+  
+```
+
+## Plot 2 Draft
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge")
+
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses")
 
 ```
 
 # Plot 3
+
+```{r}
+
+```
+

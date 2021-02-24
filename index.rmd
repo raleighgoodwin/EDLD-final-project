@@ -266,7 +266,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen. Would like to make y axis policy labels left-aligned or, ideally, justified for a cleaner look.
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen. Would like to make y axis policy labels left-aligned or, ideally, justified for a cleaner look. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
 
 ### Version 1
 
@@ -326,7 +326,8 @@ dfc_voter %>%
   geom_col(position = "dodge") +
   geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
                 width = .2,
-                position = position_dodge(.9)) +
+                position = position_dodge(.9),
+                color = "darkgray") +
   scale_fill_viridis_d(option = "plasma",
                        name = "Registered Voter",
                        labels = c("Yes", "No", "Don't know")) +
@@ -356,3 +357,27 @@ dfc_voter %>%
   ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
   geom_col(position = "dodge")
 ```
+
+### Version 2
+
+```{r}
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot")
+```
+

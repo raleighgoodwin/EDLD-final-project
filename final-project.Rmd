@@ -19,11 +19,11 @@ library(plyr)
 
 Data
 ```{r}
-data <- import(here::here("CCAMdata2008-2018.sav"))
+dat <- import(here::here("CCAMdata2008-2018.sav"))
 
-data$religion <- as.factor(data$religion)
+dat$religion <- as.factor(data$religion)
 
-data$religion_ch <- revalue(data$religion, c("-1" == "0",
+dat$religion_ch <- revalue(data$religion, c("-1" = "0",
                                              "1" = "1",
                                              "2" = "1", 
                                              "3" = "1",
@@ -43,6 +43,7 @@ data$religion_ch <- revalue(data$religion, c("-1" == "0",
 # 1 = Christian, 2 = Jewish, 3 = Muslim, 4 = Hindu, 
 # 5 = Buddhist, 6 = Other non-Christian, 7 = Atheist/Agnostic
 # Excluding "none of the above" and "refused"
+
 ```
 
 Exploring

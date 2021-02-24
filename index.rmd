@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: bootstrap
     social: menu
-    source_code: https://raleighgoodwin.github.io/EDLD-final-project/
+    source_code: https://github.com/raleighgoodwin/EDLD-final-project
 ---
 
 ```{r setup, include=FALSE}

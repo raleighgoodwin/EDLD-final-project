@@ -81,7 +81,7 @@ dfc_harm <- dfc_harm %>% # making these values look nice for plot
                                "harm_future_gen" = "Future Generations",
                                "harm_personally" = "You Personally",
                                "harm_plants_animals" = "Plants & Animals",
-                               "harm_US" = "US")),
+                               "harm_US" = "USA")),
          harm2 = revalue(as.factor(harm), 
                         c("0" = "Don't know",
                           "1" = "Not at all",
@@ -106,7 +106,7 @@ harm_plot <- cbind(harm_plotL, harm_plotR) %>%
   select(year, question2, harm2, n, tot, perc) %>% 
   mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
                             levels = c("You Personally", "Future Generations",
-                                       "US", "Developing Countries",
+                                       "USA", "Developing Countries",
                                        "Plants & Animals")))
 ```
 

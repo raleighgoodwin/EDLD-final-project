@@ -251,12 +251,13 @@ Column {data-width=700}
 pol_plot %>% 
   filter(year == 10) %>% 
   ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col() +
+  geom_col(alpha = .85) +
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
   labs(y = "Percent of Responses",
        x = NULL,
-       title = '"How much do you support or oppose..." (2018)') +
+       title = '"How much do you support or oppose..."',
+       subtitle = "Results from 2018") +
   theme_light() +
   theme(plot.title.position = "plot",
         legend.position = "top") +
@@ -333,7 +334,8 @@ dfc_voter %>%
                    n = n(),
                    se = (sd(worry)/sqrt(n))) %>% 
   ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
-  geom_col(position = "dodge") +
+  geom_col(position = "dodge",
+           alpha = .85) +
   geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
                 width = .2,
                 position = position_dodge(.9),

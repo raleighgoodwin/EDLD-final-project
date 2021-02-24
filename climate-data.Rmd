@@ -194,7 +194,14 @@ pol_plot %>%
   geom_col(position = "dodge") +
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
-  labs(y = "Percent of Responses")
+  labs(y = "Percent of Responses",
+       title = '"How much do you support or oppose..."') +
+  theme_light() +
+  theme(plot.title.position = "plot") +
+  scale_x_discrete(labels = c("Regulating CO2 as a pollutant",
+                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO2 emission\n limits on coal-fired power plants"))
 
 ```
 

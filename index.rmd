@@ -80,7 +80,7 @@ dfc_harm <- dfc_harm %>% # making these values look nice for plot
   mutate(question2 = revalue(as.factor(question), 
                              c("harm_dev_countries" = "Developing Countries",
                                "harm_future_gen" = "Future Generations",
-                               "harm_personally" = "Self",
+                               "harm_personally" = "You Personally",
                                "harm_plants_animals" = "Plants & Animals",
                                "harm_US" = "US")),
          harm2 = revalue(as.factor(harm), 
@@ -106,7 +106,7 @@ harm_plot <- cbind(harm_plotL, harm_plotR) %>%
          perc = (n / tot) * 100) %>% 
   select(year, question2, harm2, n, tot, perc) %>% 
   mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
-                            levels = c("Self", "Future Generations",
+                            levels = c("You Personally", "Future Generations",
                                        "US", "Developing Countries",
                                        "Plants & Animals")))
 ```
@@ -246,7 +246,14 @@ pol_plot %>%
   geom_col(position = "dodge") +
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
-  labs(y = "Percent of Responses")
+  labs(y = "Percent of Responses",
+       title = '"How much do you support or oppose..."') +
+  theme_light() +
+  theme(plot.title.position = "plot") +
+  scale_x_discrete(labels = c("Regulating CO2 as a pollutant",
+                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO2 emission\n limits on coal-fired power plants"))
 ```
 
 Column {.tabset data-width=350}
@@ -254,7 +261,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Plot also needs to become more user-friendly (more meaningful labels, maybe labels of the exact percentage at the end of each bar).
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Plot also feels a bit busy/crowded right now.
 
 ### Version 1
 
@@ -265,6 +272,15 @@ pol_plot %>%
 ```
 
 ### Version 2
+
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses")
+```
 
 
 Plot 3
@@ -317,4 +333,3 @@ dfc_voter %>%
 
 ### Version 2
 
-The version currently on center display will move here and be replaced by the final version.

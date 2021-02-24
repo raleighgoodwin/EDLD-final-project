@@ -181,6 +181,8 @@ Ballew, M. T., Leiserowitz, A., Roser-Renouf, C., Rosenthal, S. A., Kotcher, J. 
 Background
 ==========
 
+Need to add something here...
+
 Plot 1
 ==========
 
@@ -212,6 +214,10 @@ Column {.tabset data-width=350}
 ### Next Steps
 
 Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
 
 ### Version 1
 
@@ -267,6 +273,10 @@ Column {.tabset data-width=350}
 ### Next Steps
 
 I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen. Would like to make y axis policy labels left-aligned or, ideally, justified for a cleaner look. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
 
 ### Version 1
 
@@ -346,7 +356,11 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'm working on a related plot to this for an academic audience.
+I'm working on a related plot to this for an academic audience. Wondering if this should actually be the first plot...? Not married to plot order.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
 
 ### Version 1
 

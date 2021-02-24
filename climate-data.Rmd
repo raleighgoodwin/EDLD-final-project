@@ -1,0 +1,147 @@
+---
+title: "climate data"
+author: "Raleigh Goodwin"
+date: "2/23/2021"
+output: html_document
+---
+
+# Libraries
+```{r}
+library(tidyverse)
+library(here)
+library(rio)
+library(psych)
+library(forcats)
+library(scales)
+library(lme4)
+library(plyr)
+library(dplyr)
+library(colorspace)
+library(lubridate)
+```
+
+# Data
+```{r}
+dfc <- import(here::here("CCAMdata2008-2018.sav"))
+
+dfc <- dfc %>% 
+  mutate(yr = revalue(as.factor(year), c("1" = "2008",
+                              "2" = "2010",
+                              "3" = "2011",
+                              "4" = "2012",
+                              "5" = "2013",
+                              "6" = "2014",
+                              "7" = "2015",
+                              "8" = "2016",
+                              "9" = "2017",
+                              "10" = "2018")),
+         yr = as_date(yr))
+
+```
+
+# Plot 1
+
+## Create smaller df
+```{r}
+dfc_harm <- dfc %>% 
+  pivot_longer(
+    cols = harm_personally:harm_plants_animals,
+    names_to = "question",
+    values_to = "harm"
+  ) %>% 
+  filter(harm != -1)
+
+dfc_harm <- dfc_harm %>% # making these values look nice for plot
+  mutate(question2 = revalue(as.factor(question), 
+                             c("harm_dev_countries" = "Developing Countries",
+                               "harm_future_gen" = "Future Generations",
+                               "harm_personally" = "Self",
+                               "harm_plants_animals" = "Plants & Animals",
+                               "harm_US" = "US")),
+         harm2 = revalue(as.factor(harm), 
+                        c("0" = "Don't know",
+                          "1" = "Not at all",
+                          "2" = "Only a little",
+                          "3" = "A moderate amount",
+                          "4" = "A great deal")))
+```
+
+## Summary df for plot
+```{r}
+harm_plotL <- dfc_harm %>% 
+  group_by(year, question2) %>% 
+  dplyr::summarise(tot = n()) %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  select(tot)
+
+harm_plotR <- dfc_harm %>%
+  group_by(year, question2, harm2) %>% 
+  dplyr::summarise(n = n())
+
+harm_plot <- cbind(harm_plotL, harm_plotR) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         perc = (n / tot) * 100) %>% 
+  select(year, question2, harm2, n, tot, perc) %>% 
+  mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
+                            levels = c("Self", "Future Generations",
+                                       "US", "Developing Countries",
+                                       "Plants & Animals")))
+  
+```
+
+## Plot 1 Draft
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line(size = .75) +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses") +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  theme_light()
+
+# At this point I'd like to make it so that the x axis has the years displayed properly, but I'm having serious issues
+
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line() +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses") +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  scale_x_discrete(labels = xlab) +
+  theme_minimal()
+
+# That just gets rid of the x axis labels for some reason
+
+xlab <- c(2008, 2010:2018)
+
+harm_plot %>% 
+  ggplot(aes(as.factor(year), perc, color = as.factor(harm2), group = 1)) +
+  geom_line() +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses") +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  scale_x_discrete(labels = xlab) +
+  theme_minimal()
+
+# And this just totally freaks it out
+
+```
+
+# Plot 2
+
+##
+```{r}
+
+```
+
+# Plot 3

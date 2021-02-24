@@ -319,7 +319,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to put the legend at the bottom of the plot and fix the dimensions so that the x axis labels don't overlap.
+I'd like to put the legend at the bottom of the plot and fix the dimensions so that the x axis labels don't overlap. I'm also working on a related plot to this for an academic audience.
 
 ### Version 1
 
@@ -330,6 +330,3 @@ dfc_voter %>%
   ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
   geom_col(position = "dodge")
 ```
-
-### Version 2
-

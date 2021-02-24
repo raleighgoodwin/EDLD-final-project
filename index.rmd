@@ -200,6 +200,7 @@ harm_plot %>%
        title = '"How much do you think global warming will harm..."') +
   scale_color_viridis_d(name = "Predicted Degree of Harm",
                         option = "plasma") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_light() +
   theme(plot.title.position = "plot")
 ```
@@ -209,7 +210,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
+Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked. I'd also really like to stick the legend in the empty space on the right of the bottom row if possible.
 
 ### Version 1
 

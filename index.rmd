@@ -5,71 +5,190 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    theme: united
+    theme: bootstrap
     social: menu
     source_code: https://raleighgoodwin.github.io/EDLD-final-project/
 ---
 
 ```{r setup, include=FALSE}
+# Libraries
+
 library(flexdashboard)
-library(tidyverse)
 library(plotly)
 library(shiny)
+library(tidyverse)
+library(here)
+library(rio)
+library(psych)
+library(forcats)
+library(scales)
+library(lme4)
+library(plyr)
+library(dplyr)
+library(colorspace)
+library(lubridate)
 ```
 
-Page 1 {data-icon="fa-code-branch"}
+```{r include=F}
+# Data
+
+dfc <- import(here::here("CCAMdata2008-2018.sav"))
+
+dfc <- dfc %>% 
+  mutate(yr = revalue(as.factor(year), c("1" = "2008",
+                              "2" = "2010",
+                              "3" = "2011",
+                              "4" = "2012",
+                              "5" = "2013",
+                              "6" = "2014",
+                              "7" = "2015",
+                              "8" = "2016",
+                              "9" = "2017",
+                              "10" = "2018")),
+         yr = as_date(yr))
+
+```
+
+```{r}
+# Plot 1 work
+
+dfc_harm <- dfc %>% 
+  pivot_longer(
+    cols = harm_personally:harm_plants_animals,
+    names_to = "question",
+    values_to = "harm"
+  ) %>% 
+  filter(harm != -1)
+
+harm_plotL0 <- dfc_harm %>% 
+  group_by(year, question) %>% 
+  dplyr::summarise(tot = n()) %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  select(tot)
+
+harm_plotR0 <- dfc_harm %>%
+  group_by(year, question, harm) %>% 
+  dplyr::summarise(n = n())
+
+harm_plot0 <- cbind(harm_plotL0, harm_plotR0) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         perc = (n / tot) * 100) %>% 
+  select(year, question, harm, n, tot, perc)
+
+dfc_harm <- dfc_harm %>% # making these values look nice for plot
+  mutate(question2 = revalue(as.factor(question), 
+                             c("harm_dev_countries" = "Developing Countries",
+                               "harm_future_gen" = "Future Generations",
+                               "harm_personally" = "Self",
+                               "harm_plants_animals" = "Plants & Animals",
+                               "harm_US" = "US")),
+         harm2 = revalue(as.factor(harm), 
+                        c("0" = "Don't know",
+                          "1" = "Not at all",
+                          "2" = "Only a little",
+                          "3" = "A moderate amount",
+                          "4" = "A great deal")))
+
+harm_plotL <- dfc_harm %>% 
+  group_by(year, question2) %>% 
+  dplyr::summarise(tot = n()) %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  select(tot)
+
+harm_plotR <- dfc_harm %>%
+  group_by(year, question2, harm2) %>% 
+  dplyr::summarise(n = n())
+
+harm_plot <- cbind(harm_plotL, harm_plotR) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         perc = (n / tot) * 100) %>% 
+  select(year, question2, harm2, n, tot, perc) %>% 
+  mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
+                            levels = c("Self", "Future Generations",
+                                       "US", "Developing Countries",
+                                       "Plants & Animals")))
+```
+
+```{r}
+# Plot 2 work
+```
+
+```{r}
+# Plot 3 work
+```
+
+Data Source {.sidebar}
+==========
+**Data Source**
+
+These figures utilize data from the [Climate Change in the American Mind (CCAM)](https://climatecommunication.yale.edu/visualizations-data/americans-climate-views/) project. Led by the [Yale Program on Climate Change Communication](https://climatecommunication.yale.edu/) and the [George Mason Center for Climate Change Communication](https://www.climatechangecommunication.org/), CCAM consists of national survey data on climate change beliefs collected between 2008 and 2018 (excluding 2009) and includes over 20,000 data points.
+
+[Raleigh Goodwin](https://github.com/raleighgoodwin) created the plots on this page using the [ggplot](https://ggplot2.tidyverse.org/reference/ggplot.html) package.
+
+**Citations:**
+
+Yale Program on Climate Change Communication (YPCCC) & George Mason University Center for Climate Change Communication (Mason 4C). (2020). *Climate Change in the American Mind: National survey data on public opinion (2008-2018)* [Data file and codebook]. doi: [10.17605/OSF.IO/JW79P](https://osf.io/jw79p/)
+
+Ballew, M. T., Leiserowitz, A., Roser-Renouf, C., Rosenthal, S. A., Kotcher, J. E., Marlon, J. R., Lyon, E., Goldberg, M. H., & Maibach, E. W. (2019). Climate Change in the American Mind: Data, tools, and trends. *Environment: Science and Policy for Sustainable Development, 61*(3), 4-18. doi: [10.1080/00139157.2019.1589300](https://www.tandfonline.com/doi/full/10.1080/00139157.2019.1589300)
+
+Background
 ==========
 
-Column {.tabset data-width=350}
------------------------------------------------------------------------
-
-### Chart 1
-
-```{r}
-plot1 <- mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
-
-renderPlotly(plot1)
-```
-
-
-### Chart 2
-
-```{r}
-table1 <- mtcars
-renderDataTable(table1)
-```
-
-Column {.tabset data-width=350}
------------------------------------------------------------------------
-
-### Chart 3
-
-```{r}
-mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
-```
-
-### Chart 4
-
-```{r}
-mtcars %>% 
-  ggplot(aes(wt, mpg, col=as_factor(cyl))) +
-  geom_point() + 
-  facet_grid(~cyl)
-```
-
-Page 2
+Plot 1
 ==========
 
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-### Chart 1
+###
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line(size = .75) +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses") +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  theme_light()
+```
+
+Next I would like to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this.
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Version 1
+
+```{r}
+harm_plot0 %>% 
+  ggplot(aes(year, perc, color = as.factor(harm))) +
+  geom_line() +
+  facet_wrap(~question)
+```
+
+### Version 2
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line() +
+  facet_wrap(~question2) +
+  theme_minimal()
+```
+
+
+Plot 2
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### 
 
 ```{r}
 mtcars %>% 
@@ -78,7 +197,26 @@ mtcars %>%
   facet_grid(~cyl)
 ```
 
-### Chart 2
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Version 1
+
+```{r}
+
+```
+
+### Version 2
+
+The version currently on center display will move here and be replaced by the final version.
+
+Plot 3
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### 
 
 ```{r}
 mtcars %>% 
@@ -87,3 +225,15 @@ mtcars %>%
   facet_grid(~cyl)
 ```
 
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Version 1
+
+```{r}
+
+```
+
+### Version 2
+
+The version currently on center display will move here and be replaced by the final version.

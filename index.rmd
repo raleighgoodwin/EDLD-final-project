@@ -202,7 +202,8 @@ harm_plot %>%
                         option = "plasma") +
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_light() +
-  theme(plot.title.position = "plot")
+  theme(plot.title.position = "plot",
+        legend.position = c(.76, .1))
 ```
 
 Column {.tabset data-width=350}
@@ -242,18 +243,21 @@ Column {data-width=700}
 
 ```{r}
 pol_plot %>% 
+  filter(year == 10) %>% 
   ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col(position = "dodge") +
+  geom_col() +
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
   labs(y = "Percent of Responses",
-       title = '"How much do you support or oppose..."') +
+       title = '"How much do you support or oppose..." (2018)') +
   theme_light() +
-  theme(plot.title.position = "plot") +
-  scale_x_discrete(labels = c("Regulating CO2 as a pollutant",
+  theme(plot.title.position = "plot",
+        legend.position = "top") +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
                               "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
                               "Funding more research into\n renewable energy sources",
-                              "Setting strict CO2 emission\n limits on coal-fired power plants"))
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
 ```
 
 Column {.tabset data-width=350}
@@ -261,7 +265,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Plot also feels a bit busy/crowded right now.
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen.
 
 ### Version 1
 
@@ -282,6 +286,26 @@ pol_plot %>%
   labs(y = "Percent of Responses")
 ```
 
+### Version 3
+
+```{r}
+pol_plot %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses",
+       title = '"How much do you support or oppose..." (2018)') +
+  theme_light() +
+  theme(plot.title.position = "plot") +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
+
+When I was trying to stack them, the percents kept coming up weird. Eventually realized that's because it's working across years. To fix, I decided to only plot the most recent year of data (2018).
 
 Plot 3
 ==========
@@ -305,13 +329,14 @@ dfc_voter %>%
   scale_fill_viridis_d(option = "plasma",
                        name = "Registered Voter",
                        labels = c("Yes", "No", "Don't know")) +
-  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/\nOther", "No party/\nApolitical")) +
   scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
                      breaks = 1:4, limits = c(0, 4)) +
   labs(y = "Average Worry", x = "Political Leanings",
        title = '"How worried are you about global warming?"') +
   theme_light() +
-  theme(plot.title.position = "plot")
+  theme(plot.title.position = "plot",
+        legend.position = "top")
 ```
 
 Column {.tabset data-width=350}
@@ -319,7 +344,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to put the legend at the bottom of the plot and fix the dimensions so that the x axis labels don't overlap. I'm also working on a related plot to this for an academic audience.
+I'm working on a related plot to this for an academic audience.
 
 ### Version 1
 

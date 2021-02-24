@@ -1,6 +1,5 @@
 ---
 title: "Final Project Dashboard"
-runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns

@@ -201,6 +201,75 @@ pol_plot %>%
 # Plot 3
 
 ```{r}
+dfc_voter <- dfc %>% 
+  filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3", "4")),
+         party_w_leaners = as.factor(party_w_leaners)) %>% 
+  na.omit()
+  
 
+voter <- lm(data = dfc_voter, formula = worry ~ party_w_leaners * registered_voter)
+summary(voter)
+
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry)) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge")
+
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
+                     breaks = 1:4, limits = c(0, 4)) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot")
+  
+```
+
+```{r}
+dfc_voter2 <- dfc %>% 
+  filter(registered_voter != 5 & ideology != -1 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3", "4"))) %>% 
+  na.omit()
+
+voter2 <- lm(data = dfc_voter2, formula = worry ~ ideology * registered_voter)
+summary(voter2)
+
+dfc_voter2 %>% 
+  dplyr::group_by(registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
+                     breaks = 1:4, limits = c(0, 4)) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot")
 ```
 

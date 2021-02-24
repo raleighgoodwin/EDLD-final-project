@@ -154,6 +154,15 @@ pol_plot <- cbind(pol_plotL, pol_plotR) %>%
 
 ```{r}
 # Plot 3 work
+
+dfc_voter <- dfc %>% 
+  filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3", "4")),
+         party_w_leaners = as.factor(party_w_leaners)) %>% 
+  na.omit()
+
+
 ```
 
 Data Source {.sidebar}
@@ -245,6 +254,8 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Plot also needs to become more user-friendly (more meaningful labels, maybe labels of the exact percentage at the end of each bar).
+
 ### Version 1
 
 ```{r}
@@ -262,19 +273,46 @@ Plot 3
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-### 
+### Current Version
 
 ```{r}
-
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
+                     breaks = 1:4, limits = c(0, 4)) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot")
 ```
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
 
+### Next Steps
+
+I'd like to put the legend at the bottom of the plot and fix the dimensions so that the x axis labels don't overlap.
+
 ### Version 1
 
 ```{r}
-
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry)) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge")
 ```
 
 ### Version 2

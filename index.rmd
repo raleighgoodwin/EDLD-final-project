@@ -211,7 +211,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked. I'd also really like to stick the legend in the empty space on the right of the bottom row if possible.
+Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
 
 ### Version 1
 
@@ -249,6 +249,7 @@ pol_plot %>%
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
   labs(y = "Percent of Responses",
+       x = NULL,
        title = '"How much do you support or oppose..." (2018)') +
   theme_light() +
   theme(plot.title.position = "plot",
@@ -265,7 +266,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen.
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Trying to figure out how to get the superscript of the policy labels to show up correctly. Legend needs to be fixed so it isn't running off the screen. Would like to make y axis policy labels left-aligned or, ideally, justified for a cleaner look.
 
 ### Version 1
 

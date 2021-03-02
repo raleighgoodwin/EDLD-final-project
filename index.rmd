@@ -249,73 +249,6 @@ Column {data-width=700}
 ### Current Version
 
 ```{r}
-# pol_plot %>% 
-#   filter(year == 10) %>% 
-#   ggplot(aes(Policy, percpol, fill = Support)) +
-#   geom_col(alpha = .85) +
-#   coord_flip() +
-#   scale_fill_viridis_d(option = "plasma") +
-#   labs(y = "Percent of Responses",
-#        x = NULL,
-#        title = '"How much do you support or oppose..."',
-#        subtitle = "Results from 2018") +
-#   theme_light() +
-#   theme(plot.title.position = "plot",
-#         legend.position = "top",
-#         legend.justification = "left",
-#         legend.direction = "horizontal",
-#         legend.title = element_blank()) +
-#   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-#                               "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
-#                               "Funding more research into\n renewable energy sources",
-#                               "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-#   scale_y_continuous(labels = scales::percent_format(scale = 1))
-# 
-# pol_plot %>% 
-#   filter(year == 10) %>% 
-#   ggplot(aes(Policy, percpol, fill = Support)) +
-#   geom_col(alpha = .85) +
-#   coord_flip() +
-#   scale_fill_viridis_d(option = "plasma") +
-#   labs(y = "Percent of Responses",
-#        x = NULL,
-#        title = '"How much do you support or oppose..."',
-#        subtitle = "Results from 2018\n\n\n") +
-#   theme_light() +
-#   theme(plot.title.position = "plot",
-#         legend.position = c(0,1),
-#         legend.justification = c(.12,0),
-#         legend.direction = "horizontal",
-#         legend.title = element_blank()) +
-#   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-#                               "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
-#                               "Funding more research into\n renewable energy sources",
-#                               "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-#   scale_y_continuous(labels = scales::percent_format(scale = 1))
-
-# pol_plot %>% 
-#   filter(year == 10) %>% 
-#   ggplot(aes(Policy, percpol, fill = forcats::fct_rev(Support))) +
-#   geom_col(alpha = .85) +
-#   coord_flip() +
-#   scale_fill_viridis_d(option = "plasma",
-#                        guide = guide_legend(reverse = T)) +
-#   labs(y = "Percent of Responses",
-#        x = NULL,
-#        title = '"How much do you support or oppose..."',
-#        subtitle = "Results from 2018\n\n\n") +
-#   theme_light() +
-#   theme(plot.title.position = "plot",
-#         legend.position = c(0,1),
-#         legend.justification = c(.375,0),
-#         legend.direction = "horizontal",
-#         legend.title = element_blank()) +
-#   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-#                               "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
-#                               "Funding more research into\n renewable energy sources",
-#                               "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-#   scale_y_continuous(labels = scales::percent_format(scale = 1))
-
 pol_plot %>%
   filter(year == 10) %>%
   ggplot(aes(Policy, percpol, fill = Support)) +
@@ -339,33 +272,6 @@ pol_plot %>%
         legend.title = element_blank(),
         axis.text.x = element_markdown()) +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
-
-# 
-# labz <- c("Regulating CO<sup>2</sup> as a pollutant",
-#           "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
-#           "Funding more research into\n renewable energy sources",
-#           "Setting strict CO^2 emission\n limits on coal-fired power plants")
-# 
-# pol_plot %>% 
-#   filter(year == 10) %>% 
-#   ggplot(aes(Policy, percpol, fill = Support)) +
-#   geom_col(alpha = .85) +
-#   coord_flip() +
-#   scale_fill_viridis_d(option = "plasma",
-#                        guide = guide_legend(reverse = T)) +
-#   labs(y = "Percent of Responses",
-#        x = NULL,
-#        title = '"How much do you support or oppose..."',
-#        subtitle = "Results from 2018\n\n\n") +
-#   scale_x_discrete(labels = labz) +
-#   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
-#   theme_light() +
-#   theme(plot.title.position = "plot",
-#         legend.position = c(0,1),
-#         legend.justification = c(.375,0),
-#         legend.direction = "horizontal",
-#         legend.title = element_blank(),
-#         axis.text.x = element_markdown())
   
 ```
 

@@ -345,12 +345,14 @@ dfc_voter %>%
                        labels = c("Yes", "No", "Don't know")) +
   scale_x_discrete(labels = c("Republican", "Democrat", "Independent/\nOther", "No party/\nApolitical")) +
   scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
-                     breaks = 1:4, limits = c(0, 4)) +
+                     breaks = 1:4, limits = c(0, 4),
+                     expand = c(0, 0)) + ##### MK: Removed the empty space below the bars, but not sure if this is better:)
   labs(y = "Average Worry", x = "Political Leanings",
        title = '"How worried are you about global warming?"') +
   theme_light() +
   theme(plot.title.position = "plot",
-        legend.position = "top")
+        legend.position = "top",
+        panel.grid.major.x = element_blank()) ##### MK: Removed the vertical grid lines. I guess I remove everything that is not essential. 
 ```
 
 Column {.tabset data-width=350}

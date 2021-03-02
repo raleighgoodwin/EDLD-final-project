@@ -26,6 +26,14 @@ library(plyr)
 library(dplyr)
 library(colorspace)
 library(lubridate)
+
+
+##### MK: to handle conflicts with other packages
+# install.packages("conflicted")
+# library(conflicted)
+# conflict_prefer("summarise", "dplyr")
+# instead of dplyr::summarise, you can use summarise() now.
+
 ```
 
 ```{r include=F}

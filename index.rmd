@@ -259,20 +259,20 @@ pol_plot %>%
   labs(y = "Percent of Responses",
        x = NULL,
        title = '"How much do you support or oppose..."',
-       subtitle = "Results from 2018\n\n\n") +
+       subtitle = "Results from 2018\n\n") +
   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
                               "Funding more research into\n renewable energy sources",
                               "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
   theme_light() +
   theme(plot.title.position = "plot",
         legend.position = c(0,1),
-        legend.justification = c(.375,0),
+        legend.justification = c(.36,0),
         legend.direction = "horizontal",
         legend.title = element_blank(),
-        axis.text.x = element_markdown()) +
+        axis.text.y = element_text(hjust = .5)) +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
-  
+
 ```
 
 
@@ -281,7 +281,7 @@ Column {.tabset data-width=350}
 
 ### Next Steps
 
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. Would like to make y axis policy labels left-aligned or, ideally, justified for a cleaner look. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
 
 ### About
 

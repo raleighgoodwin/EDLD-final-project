@@ -90,19 +90,19 @@ dfc_harm <- dfc_harm %>% # making these values look nice for plot
                           "4" = "A great deal")))
 
 harm_plotL <- dfc_harm %>% 
-  group_by(year, question2) %>% 
+  group_by(yr, question2) %>% ##### MK: using the yr variable instead of the year variable
   dplyr::summarise(tot = n()) %>% 
   slice(rep(1:n(), each = 5)) %>% 
   select(tot)
 
 harm_plotR <- dfc_harm %>%
-  group_by(year, question2, harm2) %>% 
+  group_by(yr, question2, harm2) %>% ##### MK: using the yr variable instead of the year variable
   dplyr::summarise(n = n())
 
 harm_plot <- cbind(harm_plotL, harm_plotR) %>% 
-  select(-year...3) %>% 
-  mutate(year = year...1,
-         perc = (n / tot) * 100) %>% 
+  select(year = 1, everything(), -yr...3) %>% ##### MK: renaming the year var and removing the extra variable
+  mutate(perc = (n / tot) * 100,
+         year = ymd(year, truncated = 2L)) %>% ##### MK: converting the year variable into the date format
   select(year, question2, harm2, n, tot, perc) %>% 
   mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
                             levels = c("You Personally", "Future Generations",
@@ -205,7 +205,7 @@ harm_plot %>%
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_light() +
   theme(plot.title.position = "plot",
-        legend.position = c(.76, .1))
+        legend.position = c(.76, .1)) ##### MK: Legend works great!
 ```
 
 Column {.tabset data-width=350}

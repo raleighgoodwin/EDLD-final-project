@@ -253,19 +253,29 @@ pol_plot %>%
   ggplot(aes(Policy, percpol, fill = Support)) +
   geom_col(alpha = .85) +
   coord_flip() +
-  scale_fill_viridis_d(option = "plasma") +
   labs(y = "Percent of Responses",
        x = NULL,
        title = '"How much do you support or oppose..."',
        subtitle = "Results from 2018") +
   theme_light() +
   theme(plot.title.position = "plot",
-        legend.position = "top") +
+        legend.position = "top",
+        panel.grid.major.y = element_blank()) + ##### MK: removed the horizontal grid lines
   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
                               "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
                               "Funding more research into\n renewable energy sources",
                               "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-  scale_y_continuous(labels = scales::percent_format(scale = 1))
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = c("Strongly oppose" = "#0d0887", ##### MK: The last category of the legend was not visible.
+                                 "Somewhat oppose" = "#9c179e", ##### MK: This code solves the problem, but it also messes with the colors
+                                 "Somewhat support" = "#ed7953", ##### MK: So, I manually added the colors
+                                 "Strongly support" = "#f0f921"),
+                    labels = c("Strongly \noppose",
+                               "Somewhat \noppose",
+                               "Somewhat \nsupport",
+                               "Strongly \nsupport")
+                      ) 
+
 ```
 
 Column {.tabset data-width=350}
@@ -332,7 +342,7 @@ dfc_voter %>%
   dplyr::group_by(party_w_leaners, registered_voter) %>% 
   dplyr::summarize(mean_worry = mean(worry),
                    n = n(),
-                   se = (sd(worry)/sqrt(n))) %>% 
+                   se = (sd(worry)/sqrt(n))) %>% ##### MK: I really like that you combined the summarize with ggplot through a pipe!
   ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
   geom_col(position = "dodge",
            alpha = .85) +

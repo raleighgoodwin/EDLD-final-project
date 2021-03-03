@@ -216,6 +216,10 @@ Column {.tabset data-width=350}
 
 Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
 
+# OK, I am 45 minutes into this rabbit hole and feel like an ape coding. I had a similar problem on my project and solved it with a hammer. I could solve yours with a hammer, too. You could just rename the years by telling it to swap out values with this: harm_plot[1, 1] =2008 (but you'd have to do that 250 times which seems a little silly to say the least)
+
+#But that is like the least efficient method I can think of. I don't know why the code you commented out doesn't work. 
+
 ### About
 
 Here is where I can put a description of intended audience and message/any other relevant information.

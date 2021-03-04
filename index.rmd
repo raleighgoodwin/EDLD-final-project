@@ -27,7 +27,8 @@ library(dplyr)
 library(colorspace)
 library(lubridate)
 library(ggtext)
-# library(conflicted)
+library(gt)
+# library(conflicted) # this worked at first and now R is mad at it and I don't know why
 # 
 # conflict_prefer("summarize", "dplyr")
 # conflict_prefer("group_by", "dplyr")
@@ -54,7 +55,20 @@ dfc <- dfc %>%
 ```
 
 ```{r}
-# Plot 2 work
+# Plot 1 work (setting up df)
+
+dfc_voter <- dfc %>% 
+  filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3", "4")),
+         party_w_leaners = as.factor(party_w_leaners)) %>% 
+  na.omit()
+
+
+```
+
+```{r}
+# Plot 2 work (setting up df)
 
 dfc_harm <- dfc %>% 
   pivot_longer(
@@ -116,7 +130,7 @@ harm_plot <- cbind(harm_plotL, harm_plotR) %>%
 ```
 
 ```{r}
-# Plot 3 work
+# Plot 3 work (setting up df)
 
 dfc_pol <- dfc %>% 
   pivot_longer(
@@ -156,19 +170,6 @@ pol_plot <- cbind(pol_plotL, pol_plotR) %>%
 
 ```
 
-```{r}
-# Plot 1 work
-
-dfc_voter <- dfc %>% 
-  filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
-  mutate(registered_voter = factor(registered_voter,
-                                   levels = c("1", "2", "3", "4")),
-         party_w_leaners = as.factor(party_w_leaners)) %>% 
-  na.omit()
-
-
-```
-
 Data Source {.sidebar}
 ==========
 **Data Source**
@@ -186,7 +187,9 @@ Ballew, M. T., Leiserowitz, A., Roser-Renouf, C., Rosenthal, S. A., Kotcher, J. 
 Background
 ==========
 
-Need to add something here...
+Need to add something here... (or maybe not?)
+
+- or maybe i'll make the table here? maybe a demographics table here and then more specific tables for each figure?
 
 Plot 1
 ==========
@@ -229,6 +232,15 @@ Column {.tabset data-width=350}
 
 Here is where I can put a description of intended audience and message/any other relevant information.
 
+**Next steps?**
+
+- Related plot for an academic audience?
+- Create a table here
+
+```{r}
+
+```
+
 ### Version 1
 
 ```{r}
@@ -262,9 +274,6 @@ dfc_voter %>%
   theme(plot.title.position = "plot")
 ```
 
-### Next Steps
-
-- Related plot to this for an academic audience? 
 
 Plot 2
 ==========
@@ -298,6 +307,12 @@ Column {.tabset data-width=350}
 ### About
 
 Here is where I can put a description of intended audience and message/any other relevant information.
+
+- table?
+
+```{r}
+
+```
 
 ### Version 1
 
@@ -364,6 +379,17 @@ Column {.tabset data-width=350}
 
 Here is where I can put a description of intended audience and message/any other relevant information.
 
+**Next steps?**
+
+- Percent values on the bars. 
+- Superscript of the policy labels. 
+- Facet wrap this by political party affiliation/leaning.
+- table?
+
+```{r}
+
+```
+
 ### Version 1
 
 ```{r}
@@ -403,8 +429,3 @@ pol_plot %>%
   scale_y_continuous(labels = scales::percent_format(scale = 1))
 ```
 
-### Next Steps?
-
-- Percent values on the bars. 
-- Superscript of the policy labels. 
-- Facet wrap this by political party affiliation/leaning.

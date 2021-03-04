@@ -191,13 +191,15 @@ Need to add something here... (or maybe not?)
 
 - or maybe i'll make the table here? maybe a demographics table here and then more specific tables for each figure?
 
+I would normally prefer to use "climate change" over "global warming," but I was trying to be consistent with the terminology used in the survey.
+
 Plot 1
 ==========
 
-Column {data-width=700}
+Column {.tabset data-width=700}
 -----------------------------------------------------------------------
 
-### Current Version
+### **Final Version**
 
 ```{r}
 dfc_voter %>% 
@@ -219,11 +221,46 @@ dfc_voter %>%
   scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
                      breaks = 1:4, limits = c(0, 4)) +
   labs(y = "Average Worry", x = "Political Leanings",
-       title = '"How worried are you about global warming?"') +
+       title = "Global Warming Concern by Political Ideology and Voter Registration",
+       subtitle = 'Question: "How worried are you about global warming?"') +
   theme_light() +
   theme(plot.title.position = "plot",
-        legend.position = "top")
+        legend.position = "top",
+        plot.subtitle = element_text(face = "bold"))
 ```
+
+### Final version legend bottom...?
+
+```{r}
+
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge",
+           alpha = .85) +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9),
+                color = "darkgray") +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/\nOther", "No party/\nApolitical")) +
+  scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
+                     breaks = 1:4, limits = c(0, 4)) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = "Global Warming Concern by Political Ideology and Voter Registration",
+       subtitle = 'Question: "How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = "bottom",
+        plot.subtitle = element_text(face = "bold"))
+
+```
+
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
@@ -281,7 +318,7 @@ Plot 2
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-### Current Version
+### **Final Version**
 
 ```{r}
 harm_plot %>% 
@@ -298,7 +335,8 @@ harm_plot %>%
   scale_y_continuous(labels = scales::percent_format(scale = 1)) +
   theme_light() +
   theme(plot.title.position = "plot",
-        legend.position = c(.76, .08))
+        legend.position = c(.76, .08),
+        plot.subtitle = element_text(face = "bold"))
 ```
 
 Column {.tabset data-width=350}
@@ -339,10 +377,10 @@ harm_plot %>%
 Plot 3
 ==========
 
-Column {data-width=700}
+Column {.tabset data-width=700}
 -----------------------------------------------------------------------
 
-### Current Version
+### **Final Version**
 
 ```{r}
 pol_plot %>%
@@ -354,8 +392,8 @@ pol_plot %>%
                        guide = guide_legend(reverse = T)) +
   labs(y = "Percent of Responses",
        x = NULL,
-       title = '"How much do you support or oppose..."',
-       subtitle = "Results from 2018\n\n") +
+       title = "Global Warming Policy Support in 2018",
+       subtitle = 'Question: "How much do you support or oppose..."\n\n') +
   scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
                               "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
                               "Funding more research into\n renewable energy sources",
@@ -366,11 +404,41 @@ pol_plot %>%
         legend.justification = c(.36,0),
         legend.direction = "horizontal",
         legend.title = element_blank(),
-        axis.text.y = element_text(hjust = .5)) +
+        axis.text.y = element_text(hjust = .5),
+        plot.subtitle = element_text(face = "bold")) +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
 
 ```
 
+### Final version legend bottom...?
+
+```{r}
+
+pol_plot %>%
+  filter(year == 10) %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(alpha = .85) +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma",
+                       guide = guide_legend(reverse = T)) +
+  labs(y = "Percent of Responses\n\n",
+       x = NULL,
+       title = "Climate Change Policy Support in 2018",
+       subtitle = 'Question: "How much do you support or oppose..."') +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(0,-.25),
+        legend.justification = c(.2675,0),
+        legend.direction = "horizontal",
+        legend.title = element_blank(),
+        axis.text.y = element_text(hjust = .5),
+        plot.subtitle = element_text(face = "bold")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
@@ -428,4 +496,3 @@ pol_plot %>%
   theme_light() +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
 ```
-

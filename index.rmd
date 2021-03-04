@@ -27,6 +27,10 @@ library(dplyr)
 library(colorspace)
 library(lubridate)
 library(ggtext)
+# library(conflicted)
+# 
+# conflict_prefer("summarize", "dplyr")
+# conflict_prefer("group_by", "dplyr")
 ```
 
 ```{r include=F}
@@ -50,7 +54,7 @@ dfc <- dfc %>%
 ```
 
 ```{r}
-# Plot 1 work
+# Plot 2 work
 
 dfc_harm <- dfc %>% 
   pivot_longer(
@@ -91,19 +95,19 @@ dfc_harm <- dfc_harm %>% # making these values look nice for plot
                           "4" = "A great deal")))
 
 harm_plotL <- dfc_harm %>% 
-  group_by(year, question2) %>% 
+  group_by(yr, question2) %>% 
   dplyr::summarise(tot = n()) %>% 
   slice(rep(1:n(), each = 5)) %>% 
   select(tot)
 
 harm_plotR <- dfc_harm %>%
-  group_by(year, question2, harm2) %>% 
+  group_by(yr, question2, harm2) %>% 
   dplyr::summarise(n = n())
 
 harm_plot <- cbind(harm_plotL, harm_plotR) %>% 
-  select(-year...3) %>% 
-  mutate(year = year...1,
-         perc = (n / tot) * 100) %>% 
+  select(year = 1, everything(), -yr...3) %>% 
+  mutate(perc = (n / tot) * 100,
+         year = ymd(year, truncated = 2L)) %>% 
   select(year, question2, harm2, n, tot, perc) %>% 
   mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
                             levels = c("You Personally", "Future Generations",
@@ -112,7 +116,7 @@ harm_plot <- cbind(harm_plotL, harm_plotR) %>%
 ```
 
 ```{r}
-# Plot 2 work
+# Plot 3 work
 
 dfc_pol <- dfc %>% 
   pivot_longer(
@@ -153,7 +157,7 @@ pol_plot <- cbind(pol_plotL, pol_plotR) %>%
 ```
 
 ```{r}
-# Plot 3 work
+# Plot 1 work
 
 dfc_voter <- dfc %>% 
   filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
@@ -193,149 +197,6 @@ Column {data-width=700}
 ### Current Version
 
 ```{r}
-harm_plot %>% 
-  ggplot(aes(year, perc, color = as.factor(harm2))) +
-  geom_line(size = .75) +
-  facet_wrap(~question2,
-             ncol = 2) +
-  # scale_x_discrete(labels = xlab) +
-  labs(x = "Year", y = "Percent of Responses",
-       title = '"How much do you think global warming will harm..."') +
-  scale_color_viridis_d(name = "Predicted Degree of Harm",
-                        option = "plasma") +
-  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
-  theme_light() +
-  theme(plot.title.position = "plot",
-        legend.position = c(.76, .1))
-```
-
-Column {.tabset data-width=350}
------------------------------------------------------------------------
-
-### Next Steps
-
-Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
-
-### About
-
-Here is where I can put a description of intended audience and message/any other relevant information.
-
-### Version 1
-
-```{r}
-harm_plot0 %>% 
-  ggplot(aes(year, perc, color = as.factor(harm))) +
-  geom_line() +
-  facet_wrap(~question)
-```
-
-### Version 2
-
-```{r}
-harm_plot %>% 
-  ggplot(aes(year, perc, color = as.factor(harm2))) +
-  geom_line() +
-  facet_wrap(~question2) +
-  theme_minimal()
-```
-
-
-Plot 2
-==========
-
-Column {data-width=700}
------------------------------------------------------------------------
-
-### Current Version
-
-```{r}
-pol_plot %>%
-  filter(year == 10) %>%
-  ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col(alpha = .85) +
-  coord_flip() +
-  scale_fill_viridis_d(option = "plasma",
-                       guide = guide_legend(reverse = T)) +
-  labs(y = "Percent of Responses",
-       x = NULL,
-       title = '"How much do you support or oppose..."',
-       subtitle = "Results from 2018\n\n") +
-  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
-                              "Funding more research into\n renewable energy sources",
-                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-  theme_light() +
-  theme(plot.title.position = "plot",
-        legend.position = c(0,1),
-        legend.justification = c(.36,0),
-        legend.direction = "horizontal",
-        legend.title = element_blank(),
-        axis.text.y = element_text(hjust = .5)) +
-  scale_y_continuous(labels = scales::percent_format(scale = 1))
-
-```
-
-
-Column {.tabset data-width=350}
------------------------------------------------------------------------
-
-### Next Steps
-
-I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
-
-### About
-
-Here is where I can put a description of intended audience and message/any other relevant information.
-
-### Version 1
-
-```{r}
-pol_plot %>% 
-  ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col(position = "dodge")
-```
-
-### Version 2
-
-```{r}
-pol_plot %>% 
-  ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col(position = "dodge") +
-  coord_flip() +
-  scale_fill_viridis_d(option = "plasma") +
-  labs(y = "Percent of Responses")
-```
-
-### Version 3
-
-```{r}
-pol_plot %>%
-  ggplot(aes(Policy, percpol, fill = Support)) +
-  geom_col() +
-  coord_flip() +
-  scale_fill_viridis_d(option = "plasma") +
-  labs(y = "Percent of Responses",
-       title = '"How much do you support or oppose..." (2018)') +
-  theme_light() +
-  theme(plot.title.position = "plot") +
-  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
-                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
-                              "Funding more research into\n renewable energy sources",
-                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
-  scale_y_continuous(labels = scales::percent_format(scale = 1))
-```
-
-When I was trying to stack them, the percents kept coming up weird. Eventually realized that's because it's working across years. To fix, I decided to only plot the most recent year of data (2018).
-
-Plot 3
-==========
-
-Column {data-width=700}
------------------------------------------------------------------------
-
-### Current Version
-
-```{r}
 dfc_voter %>% 
   dplyr::group_by(party_w_leaners, registered_voter) %>% 
   dplyr::summarize(mean_worry = mean(worry),
@@ -363,10 +224,6 @@ dfc_voter %>%
 
 Column {.tabset data-width=350}
 -----------------------------------------------------------------------
-
-### Next Steps
-
-I'm working on a related plot to this for an academic audience. Wondering if this should actually be the first plot...? Not married to plot order.
 
 ### About
 
@@ -405,3 +262,149 @@ dfc_voter %>%
   theme(plot.title.position = "plot")
 ```
 
+### Next Steps
+
+- Related plot to this for an academic audience? 
+
+Plot 2
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Current Version
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line(size = .75) +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses",
+       title = "Perceived Risk Posed by Global Warming to Various Targets",
+       subtitle = 'Question: "How much do you think global warming will harm..."') +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(.76, .08))
+```
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
+
+### Version 1
+
+```{r}
+harm_plot0 %>% 
+  ggplot(aes(year, perc, color = as.factor(harm))) +
+  geom_line() +
+  facet_wrap(~question)
+```
+
+### Version 2
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line() +
+  facet_wrap(~question2) +
+  labs(x = "Year",
+       y = "Percent of Responses") +
+  theme_minimal()
+```
+
+
+Plot 3
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Current Version
+
+```{r}
+pol_plot %>%
+  filter(year == 10) %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(alpha = .85) +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma",
+                       guide = guide_legend(reverse = T)) +
+  labs(y = "Percent of Responses",
+       x = NULL,
+       title = '"How much do you support or oppose..."',
+       subtitle = "Results from 2018\n\n") +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(0,1),
+        legend.justification = c(.36,0),
+        legend.direction = "horizontal",
+        legend.title = element_blank(),
+        axis.text.y = element_text(hjust = .5)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+
+```
+
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
+
+### Version 1
+
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge")
+```
+
+### Version 2
+
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses")
+```
+
+### Version 3
+
+```{r}
+pol_plot %>%
+  filter(year == 10) %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses",
+       x = NULL,
+       title = '"How much do you support or oppose..." (2018)') +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  theme_light() +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
+
+### Next Steps?
+
+- Percent values on the bars. 
+- Superscript of the policy labels. 
+- Facet wrap this by political party affiliation/leaning.

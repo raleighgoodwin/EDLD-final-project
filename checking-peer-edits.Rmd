@@ -1,0 +1,401 @@
+---
+title: "Checking peer edits"
+author: "Raleigh Goodwin"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Libraries
+
+
+library(tidyverse)
+library(here)
+library(rio)
+library(psych)
+library(forcats)
+library(scales)
+library(lme4)
+library(plyr)
+library(dplyr)
+library(colorspace)
+library(lubridate)
+library(ggtext)
+
+```
+
+```{r include=F}
+# Data
+
+dfc <- import(here::here("CCAMdata2008-2018.sav"))
+
+dfc <- dfc %>% 
+  mutate(yr = revalue(as.factor(year), c("1" = "2008",
+                              "2" = "2010",
+                              "3" = "2011",
+                              "4" = "2012",
+                              "5" = "2013",
+                              "6" = "2014",
+                              "7" = "2015",
+                              "8" = "2016",
+                              "9" = "2017",
+                              "10" = "2018")),
+         yr = as_date(yr))
+
+```
+
+```{r}
+# Plot 1 work
+
+dfc_harm <- dfc %>% 
+  pivot_longer(
+    cols = harm_personally:harm_plants_animals,
+    names_to = "question",
+    values_to = "harm"
+  ) %>% 
+  filter(harm != -1)
+
+harm_plotL0 <- dfc_harm %>% 
+  group_by(year, question) %>% 
+  dplyr::summarise(tot = n()) %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  select(tot)
+
+harm_plotR0 <- dfc_harm %>%
+  group_by(year, question, harm) %>% 
+  dplyr::summarise(n = n())
+
+harm_plot0 <- cbind(harm_plotL0, harm_plotR0) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         perc = (n / tot) * 100) %>% 
+  select(year, question, harm, n, tot, perc)
+
+dfc_harm <- dfc_harm %>% # making these values look nice for plot
+  mutate(question2 = revalue(as.factor(question), 
+                             c("harm_dev_countries" = "Developing Countries",
+                               "harm_future_gen" = "Future Generations",
+                               "harm_personally" = "You Personally",
+                               "harm_plants_animals" = "Plants & Animals",
+                               "harm_US" = "USA")),
+         harm2 = revalue(as.factor(harm), 
+                        c("0" = "Don't know",
+                          "1" = "Not at all",
+                          "2" = "Only a little",
+                          "3" = "A moderate amount",
+                          "4" = "A great deal")))
+
+harm_plotL <- dfc_harm %>% 
+  group_by(yr, question2) %>% 
+  dplyr::summarise(tot = n()) %>% 
+  slice(rep(1:n(), each = 5)) %>% 
+  select(tot)
+
+harm_plotR <- dfc_harm %>%
+  group_by(yr, question2, harm2) %>% 
+  dplyr::summarise(n = n())
+
+harm_plot <- cbind(harm_plotL, harm_plotR) %>% 
+  select(year = 1, everything(), -yr...3) %>% 
+  mutate(perc = (n / tot) * 100,
+         year = ymd(year, truncated = 2L)) %>% 
+  select(year, question2, harm2, n, tot, perc) %>% 
+  mutate(question2 = factor(question2, # making sure levels are in order I want for when I facet wrap
+                            levels = c("You Personally", "Future Generations",
+                                       "USA", "Developing Countries",
+                                       "Plants & Animals")))
+```
+
+```{r}
+# Plot 2 work
+
+dfc_pol <- dfc %>% 
+  pivot_longer(
+    cols = reg_CO2_pollutant:reg_coal_emissions,
+    names_to = "Policy",
+    values_to = "Support"
+  ) %>% 
+  filter(Support != -1)
+
+dfc_pol <- dfc_pol %>% # making these values look nice for plot
+  mutate(Policy = revalue(as.factor(Policy), 
+                             c("reg_CO2_pollutant" = "Regulate Carbon Dioxide Emissions",
+                               "reg_utilities" = "Regulate Utility Energy Sources",
+                               "fund_research" = "Fund Renewable Energy Research",
+                               "reg_coal_emissions" = "Regulate Coal Power Plant Emissions")),
+         Support = revalue(as.factor(Support), 
+                        c("1" = "Strongly oppose",
+                          "2" = "Somewhat oppose",
+                          "3" = "Somewhat support",
+                          "4" = "Strongly support")))
+
+pol_plotL <- dfc_pol %>% 
+  group_by(year, Policy) %>% 
+  dplyr::summarise(totpol = n()) %>% 
+  slice(rep(1:n(), each = 4)) %>% 
+  select(totpol)
+
+pol_plotR <- dfc_pol %>%
+  group_by(year, Policy, Support) %>% 
+  dplyr::summarise(npol = n())
+
+pol_plot <- cbind(pol_plotL, pol_plotR) %>% 
+  select(-year...3) %>% 
+  mutate(year = year...1,
+         percpol = (npol / totpol) * 100) %>% 
+  select(year, Policy, Support, npol, totpol, percpol)
+
+```
+
+```{r}
+# Plot 3 work
+
+dfc_voter <- dfc %>% 
+  filter(registered_voter != 5 & party_w_leaners != -1 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3", "4")),
+         party_w_leaners = as.factor(party_w_leaners)) %>% 
+  na.omit()
+
+
+```
+
+Data Source {.sidebar}
+==========
+**Data Source**
+
+These figures utilize data from the [Climate Change in the American Mind (CCAM)](https://climatecommunication.yale.edu/visualizations-data/americans-climate-views/) project. Led by the [Yale Program on Climate Change Communication](https://climatecommunication.yale.edu/) and the [George Mason Center for Climate Change Communication](https://www.climatechangecommunication.org/), CCAM consists of national survey data on climate change beliefs collected between 2008 and 2018 (excluding 2009) and includes over 20,000 data points.
+
+[Raleigh Goodwin](https://github.com/raleighgoodwin) created the plots on this page using the [ggplot](https://ggplot2.tidyverse.org/reference/ggplot.html) package.
+
+**Citations:**
+
+Yale Program on Climate Change Communication (YPCCC) & George Mason University Center for Climate Change Communication (Mason 4C). (2020). *Climate Change in the American Mind: National survey data on public opinion (2008-2018)* [Data file and codebook]. doi: [10.17605/OSF.IO/JW79P](https://osf.io/jw79p/)
+
+Ballew, M. T., Leiserowitz, A., Roser-Renouf, C., Rosenthal, S. A., Kotcher, J. E., Marlon, J. R., Lyon, E., Goldberg, M. H., & Maibach, E. W. (2019). Climate Change in the American Mind: Data, tools, and trends. *Environment: Science and Policy for Sustainable Development, 61*(3), 4-18. doi: [10.1080/00139157.2019.1589300](https://www.tandfonline.com/doi/full/10.1080/00139157.2019.1589300)
+
+Background
+==========
+
+Need to add something here...
+
+Plot 1
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Current Version
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line(size = .75) +
+  facet_wrap(~question2,
+             ncol = 2) +
+  # scale_x_discrete(labels = xlab) +
+  labs(x = "Year", y = "Percent of Responses",
+       title = '"How much do you think global warming will harm..."') +
+  scale_color_viridis_d(name = "Predicted Degree of Harm",
+                        option = "plasma") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(.76, .1))
+```
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Next Steps
+
+Planning to fix the x axis text to accurately display the years. R has been giving me a lot of grief about this, and none of the fixes I've tried have worked.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
+
+### Version 1
+
+```{r}
+harm_plot0 %>% 
+  ggplot(aes(year, perc, color = as.factor(harm))) +
+  geom_line() +
+  facet_wrap(~question)
+```
+
+### Version 2
+
+```{r}
+harm_plot %>% 
+  ggplot(aes(year, perc, color = as.factor(harm2))) +
+  geom_line() +
+  facet_wrap(~question2) +
+  theme_minimal()
+```
+
+
+Plot 2
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Current Version
+
+```{r}
+pol_plot %>%
+  filter(year == 10) %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(alpha = .85) +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma",
+                       guide = guide_legend(reverse = T)) +
+  labs(y = "Percent of Responses",
+       x = NULL,
+       title = '"How much do you support or oppose..."',
+       subtitle = "Results from 2018\n\n") +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(0,1),
+        legend.justification = c(.36,0),
+        legend.direction = "horizontal",
+        legend.title = element_blank(),
+        axis.text.y = element_text(hjust = .5)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+
+```
+
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Next Steps
+
+I'd like to model this plot similarly to the common Pew bar plot format, wherein the bars are stacked and all centered at the divide between support/oppose instead of being left aligned at zero. Would also be nice to label with the percent values on the bars. Trying to figure out how to get the superscript of the policy labels to show up correctly. I also think I might want to facet wrap this by political party affiliation/leaning. I'll just have to reformat the df a bit first to make it possible.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
+
+### Version 1
+
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge")
+```
+
+### Version 2
+
+```{r}
+pol_plot %>% 
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses")
+```
+
+### Version 3
+
+```{r}
+pol_plot %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(y = "Percent of Responses",
+       title = '"How much do you support or oppose..." (2018)') +
+  theme_light() +
+  theme(plot.title.position = "plot") +
+  scale_x_discrete(labels = c("Regulating CO^2 as a pollutant",
+                              "Requiring electric utilities to produce\n  at least 20% of electricity using\n renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              "Setting strict CO^2 emission\n limits on coal-fired power plants")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
+
+When I was trying to stack them, the percents kept coming up weird. Eventually realized that's because it's working across years. To fix, I decided to only plot the most recent year of data (2018).
+
+Plot 3
+==========
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Current Version
+
+```{r}
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge",
+           alpha = .85) +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9),
+                color = "darkgray") +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/\nOther", "No party/\nApolitical")) +
+  scale_y_continuous(labels = c("Not at all worried", "Not very worried", "Somewhat worried", "Very worried"),
+                     breaks = 1:4, limits = c(0, 4)) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = "top")
+```
+
+Column {.tabset data-width=350}
+-----------------------------------------------------------------------
+
+### Next Steps
+
+I'm working on a related plot to this for an academic audience. Wondering if this should actually be the first plot...? Not married to plot order.
+
+### About
+
+Here is where I can put a description of intended audience and message/any other relevant information.
+
+### Version 1
+
+```{r}
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry)) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge")
+```
+
+### Version 2
+
+```{r}
+dfc_voter %>% 
+  dplyr::group_by(party_w_leaners, registered_voter) %>% 
+  dplyr::summarize(mean_worry = mean(worry),
+                   n = n(),
+                   se = (sd(worry)/sqrt(n))) %>% 
+  ggplot(aes(x = party_w_leaners, mean_worry, fill = as.factor(registered_voter))) +
+  geom_col(position = "dodge") +
+  geom_errorbar(aes(ymin = mean_worry - se, ymax = mean_worry + se),
+                width = .2,
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d(option = "plasma",
+                       name = "Registered Voter",
+                       labels = c("Yes", "No", "Don't know")) +
+  scale_x_discrete(labels = c("Republican", "Democrat", "Independent/Other", "No party/Apolitical")) +
+  labs(y = "Average Worry", x = "Political Leanings",
+       title = '"How worried are you about global warming?"') +
+  theme_light() +
+  theme(plot.title.position = "plot")
+```
+

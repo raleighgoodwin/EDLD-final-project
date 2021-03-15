@@ -408,6 +408,31 @@ pol_plot %>%
         plot.subtitle = element_text(face = "bold")) +
   scale_y_continuous(labels = scales::percent_format(scale = 1))
 
+
+pol_plot %>%
+  filter(year == 10) %>%
+  ggplot(aes(Policy, percpol, fill = Support)) +
+  geom_col(alpha = .85) +
+  coord_flip() +
+  scale_fill_viridis_d(option = "plasma",
+                       guide = guide_legend(reverse = T)) +
+  labs(y = "Percent of Responses",
+       x = NULL,
+       title = "Global Warming Policy Support in 2018",
+       subtitle = 'Question: "How much do you support or oppose..."\n\n') +
+  scale_x_discrete(labels = c(expression("Regulating" ~ CO[2] ~ "as a pollutant"),
+                              "Requiring electric utilities to\n produce at least 20% of electricity\n using renewable resources",
+                              "Funding more research into\n renewable energy sources",
+                              expression("Setting strict" ~ CO[2] ~ "emission limits on coal-fired power plants"))) +
+  theme_light() +
+  theme(plot.title.position = "plot",
+        legend.position = c(0,1),
+        legend.justification = c(.36,0),
+        legend.direction = "horizontal",
+        legend.title = element_blank(),
+        axis.text.y = element_text(hjust = .5),
+        plot.subtitle = element_text(face = "bold")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
 ```
 
 ### Final version legend bottom...?

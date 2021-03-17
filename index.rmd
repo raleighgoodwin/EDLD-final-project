@@ -358,7 +358,7 @@ Participants may be reporting less concern in Plot 1 because they erroneously do
 Plot 3
 ==========
 
-Column {.tabset data-width=800}
+Column {.tabset data-width=700}
 -----------------------------------------------------------------------
 
 ### **Final Version**
@@ -431,7 +431,7 @@ pol_plot %>%
 ```
 
 
-Column {.tabset data-width=250}
+Column {.tabset data-width=350}
 -----------------------------------------------------------------------
 
 ### About

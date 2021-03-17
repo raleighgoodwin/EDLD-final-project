@@ -308,10 +308,27 @@ dfc_voter <- dfc %>%
                                    levels = c("1", "2", "3", "4")),
          party_w_leaners = as.factor(party_w_leaners)) %>% 
   na.omit()
-  
 
 voter <- lm(data = dfc_voter, formula = worry ~ party_w_leaners * registered_voter)
 summary(voter)
+
+dfc_voterz <- within(dfc_voter, party_w_leaners <- relevel(party_w_leaners, ref = 2))
+
+voterz <- lm(data = dfc_voterz, formula = worry ~ party_w_leaners * registered_voter)
+summary(voterz) 
+
+dfc_votertutle <- dfc %>% 
+  filter(registered_voter != 5 & party_w_leaners != -1 & registered_voter != 4 & wave > 6) %>% 
+  mutate(registered_voter = factor(registered_voter,
+                                   levels = c("1", "2", "3")),
+         party_w_leaners = as.factor(party_w_leaners)) %>% 
+  na.omit()
+
+dfc_votertutle <- within(dfc_votertutle, party_w_leaners <- relevel(party_w_leaners, ref = 2))
+
+
+voterturtle <- lm(data = dfc_votertutle, formula = worry ~ party_w_leaners * registered_voter)
+summary(voterturtle)
 
 dfc_voter %>% 
   dplyr::group_by(party_w_leaners, registered_voter) %>% 

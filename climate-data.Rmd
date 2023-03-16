@@ -190,7 +190,7 @@ pol_plot %>%
   geom_col(position = "dodge")
 
 pol_plot %>% 
-  ggplot(aes(Policy, percpol, fill = Support)) +
+  ggplot(aes(Policy, percpol, fill = Support)) + #I believe you can use the mutate function along with fct_relevel to reorder the legend
   geom_col(position = "dodge") +
   coord_flip() +
   scale_fill_viridis_d(option = "plasma") +
@@ -310,6 +310,7 @@ dfc_voter <- dfc %>%
   na.omit()
 
 voter <- lm(data = dfc_voter, formula = worry ~ party_w_leaners * registered_voter)
+
 summary(voter)
 
 dfc_voterz <- within(dfc_voter, party_w_leaners <- relevel(party_w_leaners, ref = 2))
